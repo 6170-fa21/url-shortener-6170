@@ -5,6 +5,9 @@ const logger = require('morgan');
 const session = require('express-session');
 const cors = require('cors');
 const db = require('./db/db_config');
+require('dotenv').config(); // This allows us to use variables in .env file through process.env
+const isProduction = process.env.NODE_ENV === 'production'; // process.env will be used by heroku to provide configs and NODE_ENV will be set to production there.
+const history = require('connect-history-api-fallback');
 
 // import all the express routes we will be using
 const shortsRouter = require('./routes/shorts');
@@ -37,8 +40,8 @@ app.use(express.urlencoded({ extended: false }));
 // cookies for sessions
 app.use(cookieParser());
 
-// server html+css+js frontend
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(history());
+app.use(express.static(path.join(__dirname, isProduction ? 'dist' : 'public')));
 
 db.mongoose
   .connect(db.url, {
