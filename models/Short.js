@@ -18,7 +18,7 @@ const ShortSchema = new Schema(
             required: false,
             default: 0,
         },
-        // foreign key reference
+        // reference to _id field in the User collection
         "short_creator_id": {
             type: Schema.Types.ObjectId, 
             ref: "User",

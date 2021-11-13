@@ -3,13 +3,14 @@ const User = require('../models/User');
 
 async function getAll(){
   try{
+    //perform a join on the Short and User collections: Short.short_creator_id corresponds to User._id
     const shorts = await Short.aggregate([
       {$lookup:
         {
           from: 'users',
           localField: 'short_creator_id',
           foreignField: '_id',
-          as: 'shortwithusers'
+          as: 'shortwithusers' //create a new field 'shortwithusers' in this aggregated collection: embeds documents from lookup collection into Short collection
         }
       }
     ]);
@@ -21,7 +22,7 @@ async function getAll(){
 
 async function findOne(name){
   try{
-    const short = await Short.findOne({short_name: name}); //We make sure that names are unique
+    const short = await Short.findOne({short_name: name}); //We make sure that names are unique, so this will give us the short we want
     return short;
   } catch(err) {
     return false;
@@ -34,7 +35,7 @@ async function addOne(url, name, author) {
       short_original_url: url,
       short_name: name
     });
-    if (author !== undefined){
+    if (author !== undefined){ //adding related user id to document if author isn't undefined
       const user = await User.findOne({user_name: author});
       if (user){
         const user_id = user._id;
@@ -70,7 +71,6 @@ async function incrementOne(name){
   }
 }
 
-//add deleteOne
 async function deleteOne(name){
   try{
     const short = await Short.deleteOne({short_name: name});
